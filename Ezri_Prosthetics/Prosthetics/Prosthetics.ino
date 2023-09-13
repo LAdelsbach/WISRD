@@ -17,20 +17,52 @@ void setup() {
   pinky.attach(5);
 
   //5 4 0 2
- rock();
+ one();
   delay(500);
-  paper();
+  two();
   delay(500);
 
-  scissors();
+  three();
 
 
   delay(500);
-  rock();
+  four();
 }
 
 void loop() {
 }
+
+
+void one(){
+
+  pointer.write(150);
+  middle.write(0);
+  ring.write(0);
+  pinky.write(0);  
+}
+
+void two(){
+
+  pointer.write(150);
+  middle.write(150);
+  ring.write(0);
+  pinky.write(0);  
+}
+
+void three(){
+
+  pointer.write(150);
+  middle.write(150);
+  ring.write(150);
+  pinky.write(0);  
+}
+void four(){
+    pointer.write(150);
+  middle.write(150);
+  ring.write(150);
+  pinky.write(150);  
+}
+
 
 void rock(){
   pointer.write(0);
