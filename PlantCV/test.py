@@ -2,7 +2,7 @@
 import cv2
 import numpy as np
 
-original_image = cv2.imread("image.jpg")
+original_image = cv2.imread("image3.jpg")
 
 # Convert to HSV color space
 hsv_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2HSV)
