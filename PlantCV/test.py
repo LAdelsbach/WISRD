@@ -8,7 +8,7 @@ original_image = cv2.imread("image3.jpg")
 hsv_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2HSV)
 
 lower_green = np.array([20, 20, 20])
-upper_green = np.array([80, 255, 255])
+upper_green = np.array([40, 255, 245])
 
 #mask
 green_mask = cv2.inRange(hsv_image, lower_green, upper_green)
