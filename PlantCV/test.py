@@ -1,3 +1,4 @@
+#🩵🩷🤍🩷🩵🤍
 
 import cv2
 import numpy as np
@@ -21,3 +22,5 @@ cv2.imshow("Original Image", original_image)
 cv2.imshow("Green Objects", green_objects)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+#🩵🩷🤍🩷🩵🤍
