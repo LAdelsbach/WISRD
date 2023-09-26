@@ -1,26 +1,24 @@
 import socket
+import json
 
-# Coordinator's IP address and port
-coordinator_ip = "192.168.1.1"  # Replace with the coordinator's IP address
-coordinator_port = 12345
+# Server's IP address and port
+server_ip = "192.168.1.1"  # Replace with the server's IP address
+server_port = 12345
 
 # Create a socket object
 node_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Connect to the coordinator
-node_socket.connect((coordinator_ip, coordinator_port))
+# Connect to the server
+node_socket.connect((server_ip, server_port))
 
-# Define the code to send
-code_to_send = """
-print("Hello from the Node Raspberry Pi!")
-"""
+# Define the list to send
+data_to_send = [1, 2, 3, 4, 5]
 
-# Send the code to the coordinator
-node_socket.send(code_to_send.encode())
+# Serialize the list to JSON
+json_data = json.dumps(data_to_send)
 
-# Receive a response from the coordinator
-response = node_socket.recv(1024).decode()
-print(f"Received response from coordinator: {response}")
+# Send the JSON data to the server
+node_socket.send(json_data.encode())
 
-# Close the connection with the coordinator
+# Close the connection with the server
 node_socket.close()
