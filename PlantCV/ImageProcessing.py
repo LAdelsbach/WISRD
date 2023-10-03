@@ -111,13 +111,13 @@ import numpy as np
 # Replace with the actual file path to your image
 image_path = "image4.jpg"
 ##If you are using raspberry pi use this
-cam = cv2.VideoCapture(0)
+##cam = cv2.VideoCapture(0)
 
 # Load your image
-##frame = cv2.imread(image_path)
+frame = cv2.imread(image_path)
 
-#Use this for raspbery pi
-frame = cam.read()
+# #Use this for raspbery pi
+# frame = cam.read()
 
 # Convert the image to grayscale
 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
