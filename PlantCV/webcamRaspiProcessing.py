@@ -69,43 +69,18 @@ while True:
     # Find contours
     contours, _ = cv2.findContours(closed_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # Variables for storing plant areas and centroids
-    plant_areas = []
-    plant_centroids = []
+    # Draw boxes and outlines
+    for box in boxes:
+        cv2.rectangle(frame, box[0], box[1], (0, 255, 0), 2)  # Draw boxes in green
 
-    min_distance = 250
+    cv2.drawContours(frame, contours, -1, (0, 0, 255), 2)  # Draw outlines in red
 
-    def centroid_distance(c1, c2):
-        return np.sqrt((c1[0] - c2[0]) ** 2 + (c1[1] - c2[1]) ** 2)
+    # Display the processed frame with boxes and outlines
+    cv2.imshow('Processed Frame', frame)
 
-    # Merge contours
-    for contour in contours:
-        area = cv2.contourArea(contour)
-        if area > 1000:
-            M = cv2.moments(contour)
-            if M["m00"] > 0:
-                centroid = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                merged = False
-                for i, existing_centroid in enumerate(plant_centroids):
-                    if centroid_distance(centroid, existing_centroid) < min_distance:
-                        plant_areas[i] += area
-                        merged = True
-                        break
-                if not merged:
-                    plant_areas.append(area)
-                    plant_centroids.append(centroid)
-
-    # Sort plants
-    sorted_indices = sorted(range(len(plant_centroids)), key=lambda k: (plant_centroids[k][1], plant_centroids[k][0]))
-    sorted_plant_centroids = [plant_centroids[i] for i in sorted_indices]
-    sorted_plant_areas = [plant_areas[i] for i in sorted_indices]
-
-    # Print areas
-    for idx, area in enumerate(sorted_plant_areas):
-        print(f"Area {idx + 1}: {area} pixels")
-
-    # Wait for 2 minutes before capturing the next image
-    time.sleep(120)
+    # Check for the 'q' key to quit the loop
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 # Release the webcam and close all windows
 cam.release()
