@@ -1,12 +1,11 @@
 import pandas as pd
-import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
-# Load the data
-file_path = '/Users/lukeadelsbach/Desktop/WISRD/PaperAirplane/flight_test.txt'
-df = pd.read_csv(file_path)
+# Load the data from a .txt file
+file_path = 'file:///Users/lukeadelsbach/Desktop/WISRD/DiffiqApprox/flight_test.txt'  # Replace with your actual file path
+df = pd.read_csv(file_path, delimiter=',')
 
 # Select features (t, x, z, theta) and target (x, z, theta at next time step)
 features = df[['t', 'x', 'z', 'theta']]
@@ -42,7 +41,10 @@ model.compile(optimizer='adam', loss='mean_squared_error')
 # Train the model
 model.fit(X_train, y_train, epochs=100, batch_size=32, validation_data=(X_test, y_test))
 
+# Save the model
+model_save_path = 'file:///Users/lukeadelsbach/Desktop/WISRD/DiffiqApprox/modelTest.keras'  # Replace with your desired path
+model.save(model_save_path)
+
 # Evaluate the model
 loss = model.evaluate(X_test, y_test)
 print('Test loss:', loss)
-#2

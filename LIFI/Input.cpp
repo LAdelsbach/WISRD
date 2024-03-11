@@ -14,8 +14,13 @@ void loop() {
   if(analogRead(photoPin)>middle){
     longon();
     shortoff();
+    longon();
+    shortoff();
+    if(analogRead(photoPin)>middle){
+    longon();
+    shortoff();
     length = 0;
-    for(int i = 0; i < 7; i++){
+    for(int i = 0; i < 8; i++){
       int light = analogRead(photoPin);
       if(light > middle){
         longon();
@@ -54,6 +59,7 @@ void loop() {
   //int light = analogRead(photoPin);
   ///Serial.println(light);
  // delay(100);
+  }
 } 
 
 
