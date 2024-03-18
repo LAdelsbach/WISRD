@@ -72,8 +72,8 @@ for i in range(10):
 
     # Initial conditions
     theta = math.radians(45)  # Initial angle (converted to radians)
-    xfirst = 9  # Reasonable starting x speed (m/s)
-    zfirst = 9  # Initial positive z speed (m/s) - assuming it is launched with an upward component
+    xfirst = 11 - i  # Reasonable starting x speed (m/s)
+    zfirst = 11 - i  # Initial positive z speed (m/s) - assuming it is launched with an upward component
     thetafirst = 0  # Initial angular velocity (rad/s)
 
     # Starting positions at a certain height above the ground
@@ -89,8 +89,8 @@ for i in range(10):
     thetasecond = (-1) * (0.5 * cw * p * (zfirst ** 2) * (awn - awb) * math.sin(thetaDiff) + g * abs(math.cos(theta)) * (mb - mn)) / (m)
      
      # Open a file to save the data
-    with open('/Users/lukeadelsbach/Desktop/WISRD/DiffiqApprox/FinalAnalysis', 'w') as file:
-        file.write("zfirst, xfirst, theta")
+    with open('/Users/lukeadelsbach/Desktop/WISRD/DiffiqApprox/FinalAnalysis/SimulationsData/data' + str(i) + '.txt', 'w') as file:
+        file.write("zfirst, xfirst, theta \n")
         file.write(f"{zfirst:.8f},{xfirst:.8f},{math.degrees(theta):.8f},\n")
         file.write("t,x,z,theta\n")  # Write the header
 
@@ -132,7 +132,7 @@ for i in range(10):
             t += delta
 
         # The file will be automatically closed when the block ends
-        print("Simulation" + i + "complete. Data saved!!")
+        print("Simulation" + str(i) + "complete. Data saved!!")
 print("Simulation complete. Data saved!!")
 
 
