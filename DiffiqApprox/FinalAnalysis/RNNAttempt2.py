@@ -117,3 +117,5 @@ new_t = [0.2, 2, 2, 45]  # New time step to predict x, y, theta
 predicted_x_y_theta = predict_for_new_t(new_t)
 print(f'Predicted values for t={new_t}: x={predicted_x_y_theta[0]}, z={predicted_x_y_theta[1]}, theta={predicted_x_y_theta[2]}')
 
+
+
