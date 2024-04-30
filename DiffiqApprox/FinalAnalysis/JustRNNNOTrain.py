@@ -17,7 +17,7 @@ def predict_for_new_t(new_t):
 
 # Example prediction
 
-new_t = [0.2, 2.5, 2.5, 45]  # New time step to predict x, y, theta
+new_t = [0.2, 5.25, 5.25, 45]  # New time step to predict x, y, theta
 # t = np.reshape(new_t, (1, 1, 4))  # Reshape t to (samples, time steps, features(time, znot, xnot, thetanot))
 
 predicted_x_y_theta = predict_for_new_t(new_t)
