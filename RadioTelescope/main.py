@@ -1,50 +1,71 @@
 import RPi.GPIO as GPIO
 import tkinter as tk
 import time
+#TODO: if change these pins
+# Pin Definitions
+DIR_PIN_DEC = 24  # Direction GPIO Pin
+PUL_PIN_DEC = 23  # Pulse GPIO Pin
+STEPS_PER_REV_DEC = 200  # Adjust this to your stepper motor specs
 
-# Pin definitions
-# TODO change these pins
-# Right Ascension(RA)
-dir_pin0 = 20  # Change as per your connection
-step_pin0 = 21  # Change as per your connection
-# Declension
-dir_pin1 = 20  # Change as per your connection
-step_pin1 = 21  # Change as per your connection
+# Setup GPIO pins
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(DIR_PIN_DEC, GPIO.OUT)
+GPIO.setup(PUL_PIN_DEC, GPIO.OUT)
+
+# Pin Definitions
+DIR_PIN_RA = 24  # Direction GPIO Pin
+PUL_PIN_RA = 23  # Pulse GPIO Pin
+STEPS_PER_REV_RA = 200  # Adjust this to your stepper motor specs
+
+# Setup GPIO pins
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(DIR_PIN_RA, GPIO.OUT)
+GPIO.setup(PUL_PIN_RA, GPIO.OUT)
 
 
 
-# Setup
-GPIO.setmode(GPIO.BCM)  # Broadcom pin-numbering scheme
-GPIO.setup(dir_pin0, GPIO.OUT)
-GPIO.setup(step_pin0, GPIO.OUT)
-GPIO.setup(dir_pin1, GPIO.OUT)
-GPIO.setup(step_pin1, GPIO.OUT)
 
-# Motor control parameters
-steps = 200  # Number of steps to turn the motor
-speed = 0.05  # Time between steps (lower is faster)
 
-def step_once_declension():
-    GPIO.output(step_pin1, GPIO.HIGH)
-    time.sleep(speed)
-    GPIO.output(step_pin1, GPIO.LOW)
-    time.sleep(speed)
+def move_to_position_dec(steps, direction):
+    # Set the direction
+    GPIO.output(DIR_PIN_DEC, GPIO.HIGH if direction else GPIO.LOW)
 
-def step_once_ra():
-    GPIO.output(step_pin0, GPIO.HIGH)
-    time.sleep(speed)
-    GPIO.output(step_pin0, GPIO.LOW)
-    time.sleep(speed)
-
-def rotate_motor_declension(direction, steps):
-    GPIO.output(dir_pin1, GPIO.HIGH if direction == 'clockwise' else GPIO.LOW)
+    # Step to position
     for _ in range(steps):
-        step_once_declension()
+        GPIO.output(PUL_PIN_DEC, GPIO.HIGH)
+        time.sleep(0.001)
+        GPIO.output(PUL_PIN_DEC, GPIO.LOW)
+        time.sleep(0.001)
 
-def rotate_motor_ra(direction, steps):
-    GPIO.output(dir_pin0, GPIO.HIGH if direction == 'clockwise' else GPIO.LOW)
+def rotate_to_angle_dec(angle):
+    # Calculate the number of steps needed
+    steps = int(angle / 360.0 * STEPS_PER_REV_DEC)
+    direction = angle >= 0
+    move_to_position_dec(abs(steps), direction)
+
+
+
+
+
+def move_to_position_ra(steps, direction):
+    # Set the direction
+    GPIO.output(DIR_PIN_RA, GPIO.HIGH if direction else GPIO.LOW)
+
+    # Step to position
     for _ in range(steps):
-        step_once_ra()
+        GPIO.output(PUL_PIN_RA, GPIO.HIGH)
+        time.sleep(0.001)
+        GPIO.output(PUL_PIN_RA, GPIO.LOW)
+        time.sleep(0.001)
+
+def rotate_to_angle_ra(angle):
+    # Calculate the number of steps needed
+    steps = int(angle / 360.0 * STEPS_PER_REV_RA)
+    direction = angle >= 0
+    move_to_position_ra(abs(steps), direction)
+
+
+
 def display():
     frame = tk.Frame(root)
     frame.pack(side=tk.TOP, pady=5)

@@ -1,103 +1,87 @@
-# MLP for Pima Indians Dataset with 10-fold cross validation
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from sklearn.model_selection import StratifiedKFold
 import numpy as np
-import tensorflow as tf
-import numpy as np
-# fix random seed for reproducibility
-seed = 7
-np.random.seed(seed)
-# load pima indians dataset
+import os
+from keras.models import load_model
+from sklearn.metrics import mean_squared_error
+
+# Define a function to calculate Mean Absolute Percentage Error
+def mean_absolute_percentage_error(y_true, y_pred): 
+    y_true, y_pred = np.array(y_true), np.array(y_pred)
+    non_zero_mask = y_true != 0  # Avoid division by zero
+    if np.any(non_zero_mask):
+        return np.mean(np.abs((y_true[non_zero_mask] - y_pred[non_zero_mask]) / y_true[non_zero_mask])) * 100
+    else:
+        return np.nan  # Return NaN if all y_true values are zero
+
+# Function to read and parse the test data
 def read_and_parse_data(file_path):
-    # Initialize lists for each variable
-    t = []
-    x = []
-    z = []
-    theta = []
-
-    znot = 0
-    xnot = 0
-    thetanot = 0
-
-
-    # Open and read the file
-    # def read_data(file_path):
-    # Initialize the lists for storing data
-    
     with open(file_path, 'r') as file:
-        # Skip the header
-        next(file)
-        # Read the second line to get initial values
-        values = file.readline().strip().split(',')
-
-        znot = float(values[0])
-        xnot = float(values[1])
-        thetanot = float(values[2])
-
-        # Skip the next line (assuming you want to skip one more line here, if not, remove this next(file))
-        next(file)
-
-        # Read each subsequent line, split by comma, and append to lists
+        next(file)  # Skip the header
+        init_values = file.readline().strip().split(',')
+        znot, xnot, thetanot = float(init_values[0]), float(init_values[1]), float(init_values[2])
+        next(file)  # Skip the second header
+        t, x, z, theta = [], [], [], []
         for line in file:
             values = line.strip().split(',')
             t.append(float(values[0]))
             x.append(float(values[1]))
             z.append(float(values[2]))
             theta.append(float(values[3]))
-
     return znot, xnot, thetanot, t, x, z, theta
 
+# Directory containing test data files
+data_directory = '/Users/lukeadelsbach/Desktop/WISRD/DiffiqApprox/FinalAnalysis/TestingData/'
+model_path = '/Users/lukeadelsbach/Desktop/WISRD/DiffiqApprox/rnn_model.h5'
 
-# Call the function and store the results
+# Load the trained model
+model = load_model(model_path)
 
-# for i in range(10):
-#     filena = '/Users/lukeadelsbach/Desktop/WISRD/DiffiqApprox/FinalAnalysis/data0.txt'
-#     znot, xnot, thetanot, time, x, z, theta = read_and_parse_data(filena)
-#     # for i in range(len(time)):
-#     #     time[i] = [time[i], x[i],z[i],theta[i]]
-test = []
-znot = []
-xnot = []
-thetanot = []
-x = []
-z = []
-theta = []
-print("starting" + "\n")
+# Prepare to aggregate MSE and MAPE
+mse_x_list, mse_z_list, mse_theta_list = [], [], []
+mape_x_list, mape_z_list, mape_theta_list = [], [], []
 
-for i in range(100):
-    print("Step: " + str(i) + "\n")
-    filena = '/Users/lukeadelsbach/Desktop/WISRD/DiffiqApprox/FinalAnalysis/SimulationsData/data' + str(i) + '.txt'
-    znot1, xnot1, thetanot1, time, x1, z1, theta1 = read_and_parse_data(filena)
-    for i in range(len(time)):
-        blah = [time[i], znot1, xnot1, thetanot1]
-        test.append(blah)
-        znot.append(znot1)
-        xnot.append(xnot1)
-        thetanot.append(thetanot1)
-        z.append(z1[i])
-        x.append(x1[i])
-        theta.append(theta1[i])
-    #TODO fix all that crap
-    # Reshape the data
+# Process each test data file
+for filename in os.listdir(data_directory):
+    if filename.startswith("data") and filename.endswith(".txt"):
+        file_path = os.path.join(data_directory, filename)
 
-# print(test)
-print("Beggining reshaping")
-t = np.reshape(test, (len(test), 1, 4))  # Reshape t to (samples, time steps, features(time, znot, xnot, thetanot))
+        # Load the test data
+        znot, xnot, thetanot, t, x_actual, z_actual, theta_actual = read_and_parse_data(file_path)
 
-outputs = np.column_stack((x, z, theta))  # Combine x, y, theta into a single matrix for output
-# print(t)
-# define 10-fold cross validation test harness
+        # Prepare the test inputs
+        test_input = np.array([[time_step, znot, xnot, thetanot] for time_step in t])
+        test_input = np.reshape(test_input, (len(test_input), 1, 4))
 
+        # Predict using the model
+        predictions = model.predict(test_input)
+        x_pred, z_pred, theta_pred = predictions[:, 0], predictions[:, 1], predictions[:, 2]
 
-cvscores = []
+        # Calculate MSE for each output
+        mse_x = mean_squared_error(x_actual, x_pred)
+        mse_z = mean_squared_error(z_actual, z_pred)
+        mse_theta = mean_squared_error(theta_actual, theta_pred)
 
-model = tf.keras.models.load_model('/Users/lukeadelsbach/Desktop/WISRD/DiffiqApprox/rnn_model.h5')
+        # Calculate MAPE for each output
+        mape_x = mean_absolute_percentage_error(x_actual, x_pred)
+        mape_z = mean_absolute_percentage_error(z_actual, z_pred)
+        mape_theta = mean_absolute_percentage_error(theta_actual, theta_pred)
 
-for i in range(len(outputs)):
- # evaluate the model
- scores = model.evaluate(t[i], outputs[i], verbose=0)
- print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
- cvscores.append(scores[1] * 100)
- 
-print("%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
+        # Store results
+        mse_x_list.append(mse_x)
+        mse_z_list.append(mse_z)
+        mse_theta_list.append(mse_theta)
+        mape_x_list.append(mape_x)
+        mape_z_list.append(mape_z)
+        mape_theta_list.append(mape_theta)
+
+# Calculate average MSE and MAPE across all files
+avg_mse_x = np.mean(mse_x_list)
+avg_mse_z = np.mean(mse_z_list)
+avg_mse_theta = np.mean(mse_theta_list)
+avg_mape_x = np.mean(mape_x_list)
+avg_mape_z = np.mean(mape_z_list)
+avg_mape_theta = np.mean(mape_theta_list)
+
+# Print average MSE and MAPE results
+print(f"Average Mean Squared Error for x: {avg_mse_x:.4f}, Average MAPE: {avg_mape_x:.2f}%")
+print(f"Average Mean Squared Error for z: {avg_mse_z:.4f}, Average MAPE: {avg_mape_z:.2f}%")
+print(f"Average Mean Squared Error for theta: {avg_mse_theta:.4f}, Average MAPE: {avg_mape_theta:.2f}%")
